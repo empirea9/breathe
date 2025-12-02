@@ -14,7 +14,6 @@ interface BreatheApi {
 }
 
 object RetrofitClient {
-    // Ensure this matches your network setup (localhost for emulator)
     private const val BASE_URL = "http://10.0.2.2:8000/" 
 
     val api: BreatheApi by lazy {
