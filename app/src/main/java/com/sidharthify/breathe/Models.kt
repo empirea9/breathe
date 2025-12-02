@@ -23,12 +23,10 @@ data class AqiResponse(
     @SerializedName("concentrations_us_units") val concentrations: Map<String, Double>?
 )
 
-sealed class UiState {
-    object Loading : UiState()
-    data class Success(
-        val zones: List<Zone>,
-        val pinnedZones: List<AqiResponse>,
-        val pinnedIds: Set<String>
-    ) : UiState()
-    data class Error(val message: String) : UiState()
-}
+data class AppState(
+    val isLoading: Boolean = true,
+    val error: String? = null,
+    val zones: List<Zone> = emptyList(),
+    val pinnedZones: List<AqiResponse> = emptyList(),
+    val pinnedIds: Set<String> = emptySet()
+)
