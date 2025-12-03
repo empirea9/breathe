@@ -17,7 +17,7 @@ data class Zone(
 data class AqiResponse(
     @SerializedName("zone_id") val zoneId: String,
     @SerializedName("zone_name") val zoneName: String,
-    @SerializedName("us_aqi") val usAqi: Int,
+    @SerializedName("aqi") val nAqi: Int,
     @SerializedName("main_pollutant") val mainPollutant: String,
     @SerializedName("aqi_breakdown") val aqiBreakdown: Map<String, Int>?,
     @SerializedName("concentrations_us_units") val concentrations: Map<String, Double>?

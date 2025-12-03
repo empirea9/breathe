@@ -287,7 +287,7 @@ fun HomeScreen(
 
 @Composable
 fun PinnedMiniCard(zone: AqiResponse, isSelected: Boolean, onClick: () -> Unit) {
-    val aqiColor = getAqiColor(zone.usAqi)
+    val aqiColor = getAqiColor(zone.nAqi)
     val containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
     
     Card(
@@ -312,7 +312,7 @@ fun PinnedMiniCard(zone: AqiResponse, isSelected: Boolean, onClick: () -> Unit) 
                 Box(modifier = Modifier.size(12.dp).clip(RoundedCornerShape(4.dp)).background(aqiColor))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${zone.usAqi}", 
+                    text = "${zone.nAqi}", 
                     style = MaterialTheme.typography.headlineMedium, 
                     fontWeight = FontWeight.Bold
                 )
@@ -323,7 +323,7 @@ fun PinnedMiniCard(zone: AqiResponse, isSelected: Boolean, onClick: () -> Unit) 
 
 @Composable
 fun MainDashboardDetail(zone: AqiResponse) {
-    val aqiColor = getAqiColor(zone.usAqi)
+    val aqiColor = getAqiColor(zone.nAqi)
     val aqiBgColor = aqiColor.copy(alpha = 0.15f)
 
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
@@ -356,7 +356,7 @@ fun MainDashboardDetail(zone: AqiResponse) {
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "${zone.usAqi}",
+                        text = "${zone.nAqi}",
                         style = MaterialTheme.typography.displayLarge.copy(fontSize = 110.sp),
                         fontWeight = FontWeight.Black,
                         color = aqiColor
@@ -516,7 +516,7 @@ fun SettingsScreen(isDarkTheme: Boolean, onThemeToggle: () -> Unit) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
         SettingsItem("Data Standards", "Indian National Air Quality Index (NAQI)")
-        SettingsItem("Sources", "CPCB (Govt. of India) & OpenWeather")
+        SettingsItem("Sources", "CPCB (Govt. of India) & OpenMeteo")
         
         SettingsItem(
             title = "Breathe OSS",
