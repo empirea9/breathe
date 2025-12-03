@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.core.view.WindowCompat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -194,33 +196,36 @@ fun BreatheApp(isDarkTheme: Boolean, onThemeToggle: () -> Unit, viewModel: Breat
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
-            when (currentScreen) {
-                AppScreen.Home -> HomeScreen(
-                    isLoading = state.isLoading,
-                    error = state.error,
-                    pinnedZones = state.pinnedZones,
-                    onGoToExplore = { currentScreen = AppScreen.Explore },
-                    onRetry = { viewModel.init(context) }
-                )
-                AppScreen.Explore -> ExploreScreen(
-                    isLoading = state.isLoading,
-                    error = state.error,
-                    zones = state.zones,
-                    pinnedIds = state.pinnedIds,
-                    query = viewModel.searchQuery.collectAsState().value,
-                    onSearchChange = viewModel::onSearchQueryChanged,
-                    onPinToggle = { id -> viewModel.togglePin(context, id) },
-                    onRetry = { viewModel.init(context) }
-                )
-                AppScreen.Settings -> SettingsScreen(isDarkTheme, onThemeToggle)
+            Crossfade(
+                targetState = currentScreen,
+                animationSpec = tween(durationMillis = 300),
+                label = "ScreenTransition"
+            ) { screen ->
+                when (screen) {
+                    AppScreen.Home -> HomeScreen(
+                        isLoading = state.isLoading,
+                        error = state.error,
+                        pinnedZones = state.pinnedZones,
+                        onGoToExplore = { currentScreen = AppScreen.Explore },
+                        onRetry = { viewModel.init(context) }
+                    )
+                    AppScreen.Explore -> ExploreScreen(
+                        isLoading = state.isLoading,
+                        error = state.error,
+                        zones = state.zones,
+                        pinnedIds = state.pinnedIds,
+                        query = viewModel.searchQuery.collectAsState().value,
+                        onSearchChange = viewModel::onSearchQueryChanged,
+                        onPinToggle = { id -> viewModel.togglePin(context, id) },
+                        onRetry = { viewModel.init(context) }
+                    )
+                    AppScreen.Settings -> SettingsScreen(isDarkTheme, onThemeToggle)
+                }
             }
         }
     }
 }
 
-// ----------------------------------------------------------------
-// SECTION 1: HOME
-// ----------------------------------------------------------------
 @Composable
 fun HomeScreen(
     isLoading: Boolean,
@@ -394,9 +399,6 @@ fun MainDashboardDetail(zone: AqiResponse) {
     }
 }
 
-// ----------------------------------------------------------------
-// SECTION 2: EXPLORE
-// ----------------------------------------------------------------
 @Composable
 fun ExploreScreen(
     isLoading: Boolean,
@@ -486,9 +488,6 @@ fun ZoneListItem(zone: Zone, isPinned: Boolean, onPinClick: () -> Unit) {
     }
 }
 
-// ----------------------------------------------------------------
-// SECTION 3: SETTINGS
-// ----------------------------------------------------------------
 @Composable
 fun SettingsScreen(isDarkTheme: Boolean, onThemeToggle: () -> Unit) {
     val uriHandler = LocalUriHandler.current
@@ -539,7 +538,7 @@ fun SettingsScreen(isDarkTheme: Boolean, onThemeToggle: () -> Unit) {
             onClick = { uriHandler.openUri("https://github.com/sidharthify") }
         )
         SettingsItem(
-            title = "Aditiya Gupta",
+            title = "Aaditya Gupta",
             subtitle = "@Flashwreck",
             onClick = { uriHandler.openUri("https://github.com/Flashwreck") }
         )
