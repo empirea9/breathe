@@ -110,7 +110,7 @@ class BreatheViewModel : ViewModel() {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = android.graphics.Color.TRANSPARENT
         window.navigationBarColor = android.graphics.Color.TRANSPARENT
@@ -119,7 +119,6 @@ class MainActivity : ComponentActivity() {
             var isDarkTheme by remember { mutableStateOf(true) }
             val context = LocalContext.current
             
-            // --- DYNAMIC STATUS BAR ICONS ---
             DisposableEffect(isDarkTheme) {
                 val window = (context as Activity).window
                 val insetsController = WindowCompat.getInsetsController(window, window.decorView)
@@ -494,7 +493,12 @@ fun ZoneListItem(zone: Zone, isPinned: Boolean, onPinClick: () -> Unit) {
 fun SettingsScreen(isDarkTheme: Boolean, onThemeToggle: () -> Unit) {
     val uriHandler = LocalUriHandler.current
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp)
+    ) {
         Text("Settings", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(32.dp))
         
@@ -519,32 +523,26 @@ fun SettingsScreen(isDarkTheme: Boolean, onThemeToggle: () -> Unit) {
             subtitle = "View Source on GitHub",
             onClick = { uriHandler.openUri("https://github.com/breathe-OSS") }
         )
-        
-        Spacer(modifier = Modifier.weight(1f))
-        
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            shape = RoundedCornerShape(20.dp)
-        ) {
-            Column(modifier = Modifier.padding(20.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.Code, null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text("Developers", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    "• sidharthify (GitHub)",
-                    modifier = Modifier.clickable { uriHandler.openUri("https://github.com/sidharthify") }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "• Flashwreck (GitHub)",
-                    modifier = Modifier.clickable { uriHandler.openUri("https://github.com/Flashwreck") }
-                )
-            }
-        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            "Developers",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SettingsItem(
+            title = "Sidharth Sharma",
+            subtitle = "@sidharthify",
+            onClick = { uriHandler.openUri("https://github.com/sidharthify") }
+        )
+        SettingsItem(
+            title = "Aditiya Gupta",
+            subtitle = "@Flashwreck",
+            onClick = { uriHandler.openUri("https://github.com/Flashwreck") }
+        )
     }
 }
 
