@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -86,7 +88,6 @@ class BreatheViewModel : ViewModel() {
                 }
 
                 val allResults = allJobs.awaitAll().filterNotNull()
-
                 val pinnedResults = allResults.filter { it.zoneId in pinnedSet }
 
                 _uiState.value = AppState(
@@ -233,6 +234,7 @@ fun BreatheApp(isDarkTheme: Boolean, onThemeToggle: () -> Unit, viewModel: Breat
                         zones = state.zones,
                         allAqiData = state.allAqiData,
                         pinnedIds = state.pinnedIds,
+                        isDarkTheme = isDarkTheme,
                         onPinToggle = { id -> viewModel.togglePin(context, id) }
                     )
                     AppScreen.Explore -> ExploreScreen(
@@ -258,6 +260,7 @@ fun MapScreen(
     zones: List<Zone>,
     allAqiData: List<AqiResponse>,
     pinnedIds: Set<String>,
+    isDarkTheme: Boolean,
     onPinToggle: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -282,8 +285,22 @@ fun MapScreen(
                     }
                 },
                 update = { mapView ->
-                    mapView.overlays.clear()
+                    val tilesOverlay = mapView.overlayManager.tilesOverlay
+                    if (isDarkTheme) {
+                        val inverseMatrix = ColorMatrix(
+                            floatArrayOf(
+                                -1.0f, 0.0f, 0.0f, 0.0f, 255f,
+                                0.0f, -1.0f, 0.0f, 0.0f, 255f,
+                                0.0f, 0.0f, -1.0f, 0.0f, 255f,
+                                0.0f, 0.0f, 0.0f, 1.0f, 0.0f
+                            )
+                        )
+                        tilesOverlay.setColorFilter(ColorMatrixColorFilter(inverseMatrix))
+                    } else {
+                        tilesOverlay.setColorFilter(null)
+                    }
 
+                    mapView.overlays.clear()
                     zones.forEach { zone ->
                         if (zone.lat != null && zone.lon != null) {
                             val marker = Marker(mapView)
@@ -326,10 +343,8 @@ fun MapScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(bottom = 48.dp)
                 ) {
-                    // Show full data
                     MainDashboardDetail(selectedZoneData!!)
                     
-                    // Pin/Unpin Button
                     val isPinned = pinnedIds.contains(selectedZoneData!!.zoneId)
                     Box(Modifier.padding(horizontal = 24.dp)) {
                         OutlinedButton(
@@ -495,7 +510,7 @@ fun MainDashboardDetail(zone: AqiResponse) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "${zone.nAqi}",
-                        style = MaterialTheme.typography.displayLarge.copy(fontSize = 110.sp),
+                        style = MaterialTheme.typography.displayLarge.copy(fontSize = 90.sp),
                         fontWeight = FontWeight.Black,
                         color = aqiColor
                     )
