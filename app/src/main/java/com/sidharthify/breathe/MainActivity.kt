@@ -653,11 +653,11 @@ fun formatPollutantName(key: String): String {
 
 fun getAqiColor(aqi: Int): Color {
     return when (aqi) {
-        in 0..50 -> Color(0xFF00E400)
-        in 51..100 -> Color(0xFFFFFF00)
-        in 101..150 -> Color(0xFFFF7E00)
-        in 151..200 -> Color(0xFFFF0000)
-        in 201..300 -> Color(0xFF8F3F97)
-        else -> Color(0xFF7E0023)
+        in 0..50 -> Color(0xFF55A84F)
+        in 51..100 -> Color(0xFFA3C853)
+        in 101..200 -> Color(0xFFFDD74B)
+        in 201..300 -> Color(0xFFFB9A34)
+        in 301..400 -> Color(0xFFE93F33)
+        else -> Color(0xFFAF2D24)
     }
 }
