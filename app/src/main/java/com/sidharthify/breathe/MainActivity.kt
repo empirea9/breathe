@@ -56,6 +56,7 @@ import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -283,6 +284,14 @@ fun MapScreen(
                     MapView(ctx).apply {
                         setTileSource(TileSourceFactory.MAPNIK)
                         setMultiTouchControls(true)
+
+                        val jkRegion = BoundingBox(37.5, 81.0, 32.0, 72.0)
+
+                        setScrollableAreaLimitDouble(jkRegion)
+
+                        minZoomLevel = 7.0  
+                        maxZoomLevel = 20.0
+
                         controller.setZoom(9.0)
                         controller.setCenter(startPoint)
                     }
