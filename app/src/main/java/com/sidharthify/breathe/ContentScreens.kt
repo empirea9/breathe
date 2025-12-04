@@ -164,7 +164,7 @@ fun SettingsScreen(
 
     val currentVersion = try {
         // com.sidharthify.breathe.BuildConfig.VERSION_NAME
-        "v2.0"
+        "v2.1"
     } catch (e: Exception) {
         "Unknown"
     }
@@ -194,7 +194,7 @@ fun SettingsScreen(
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
         SettingsItem("Data Standards", "Indian National Air Quality Index (NAQI)")
-        SettingsItem("Sources", "OpenMeteo")
+        SettingsItem("Sources", "OpenMeteo & OpenAQ")
 
         SettingsItem(
             title = "Breathe OSS",
