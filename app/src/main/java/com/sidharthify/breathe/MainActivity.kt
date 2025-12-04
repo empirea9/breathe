@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.res.painterResource
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -227,6 +229,7 @@ fun BreatheApp(isDarkTheme: Boolean, onThemeToggle: () -> Unit, viewModel: Breat
                         isLoading = state.isLoading,
                         error = state.error,
                         pinnedZones = state.pinnedZones,
+                        zones = state.zones,
                         onGoToExplore = { currentScreen = AppScreen.Explore },
                         onRetry = { viewModel.init(context) }
                     )
@@ -343,7 +346,8 @@ fun MapScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(bottom = 48.dp)
                 ) {
-                    MainDashboardDetail(selectedZoneData!!)
+                    val provider = zones.find { it.id == selectedZoneData!!.zoneId }?.provider
+                    MainDashboardDetail(selectedZoneData!!, provider)
                     
                     val isPinned = pinnedIds.contains(selectedZoneData!!.zoneId)
                     Box(Modifier.padding(horizontal = 24.dp)) {
@@ -379,6 +383,7 @@ fun HomeScreen(
     isLoading: Boolean,
     error: String?,
     pinnedZones: List<AqiResponse>,
+    zones: List<Zone>,
     onGoToExplore: () -> Unit,
     onRetry: () -> Unit
 ) {
@@ -433,7 +438,8 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         if (selectedZone != null) {
-            MainDashboardDetail(selectedZone!!)
+            val provider = zones.find { it.id == selectedZone!!.zoneId }?.provider
+            MainDashboardDetail(selectedZone!!, provider)
         }
     }
 }
@@ -475,15 +481,47 @@ fun PinnedMiniCard(zone: AqiResponse, isSelected: Boolean, onClick: () -> Unit) 
 }
 
 @Composable
-fun MainDashboardDetail(zone: AqiResponse) {
+fun MainDashboardDetail(zone: AqiResponse, provider: String?) {
     val aqiColor = getAqiColor(zone.nAqi)
     val aqiBgColor = aqiColor.copy(alpha = 0.15f)
+    
+    val isOpenMeteo = provider?.contains("Open-Meteo", ignoreCase = true) == true ||
+                      provider?.contains("OpenMeteo", ignoreCase = true) == true
 
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.LocationOn, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(18.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Now Viewing", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
+        
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Filled.LocationOn, 
+                    null, 
+                    tint = MaterialTheme.colorScheme.secondary, 
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    "Now Viewing", 
+                    style = MaterialTheme.typography.labelLarge, 
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            if (isOpenMeteo) {
+                Image(
+                    painter = painterResource(id = R.drawable.open_meteo_logo),
+                    contentDescription = "Open-Meteo Data",
+                    modifier = Modifier
+                        .height(24.dp)
+                        .padding(start = 8.dp),
+                    alpha = 0.8f 
+                )
+            }
         }
         
         Spacer(modifier = Modifier.height(4.dp))
@@ -495,7 +533,6 @@ fun MainDashboardDetail(zone: AqiResponse) {
             maxLines = 2,
             lineHeight = 40.sp
         )
-        
         Spacer(modifier = Modifier.height(24.dp))
         
         Card(
