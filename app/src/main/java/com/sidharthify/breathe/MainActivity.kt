@@ -758,7 +758,7 @@ fun SettingsScreen(isDarkTheme: Boolean, onThemeToggle: () -> Unit) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
         SettingsItem("Data Standards", "Indian National Air Quality Index (NAQI)")
-        SettingsItem("Sources", "CPCB (Govt. of India) & OpenMeteo")
+        SettingsItem("Sources", "OpenMeteo")
 
         SettingsItem(
             title = "Breathe OSS",

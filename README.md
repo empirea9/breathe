@@ -54,9 +54,8 @@
   - Sync Gradle files.
   - Select your device and click Run.
 
-## (WIP) Data Providers:
-1. **CPCB (Central Pollution Control Board):** For official government data.
-2. **Open-Meteo:** For weather and air quality data integration.
+## (WIP) AQI Data Provider:
+- **Open-Meteo:**
 
 We are looking to setup certain custom physical sensors in some areas of Jammu, anyone willing to contribute can send a mail to wednisegit@gmail.com
 
