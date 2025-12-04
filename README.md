@@ -23,6 +23,7 @@
 * **Indian NAQI Standards**
 * **Detailed Breakdown**
 * **A map with data laid across**
+* **24 Hour graph of AQI Data**
 
 ## Tech Stack
 
