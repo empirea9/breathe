@@ -7,12 +7,14 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.LocationOn
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.geometry.Offset
 import java.text.SimpleDateFormat
@@ -108,6 +111,8 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
     val isOpenAQ = provider?.contains("Open-AQ", ignoreCase = true) == true ||
             provider?.contains("OpenAQ", ignoreCase = true) == true
 
+    val uriHandler = LocalUriHandler.current
+
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
 
         Row(
@@ -143,7 +148,11 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
                     contentDescription = "Open-Meteo Data",
                     modifier = Modifier
                         .height(24.dp)
-                        .padding(start = 8.dp),
+                        .padding(start = 8.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() }, 
+                            indication = null
+                         ) { uriHandler.openUri("https://open-meteo.com/") },
                     alpha = 0.8f
                 )
             }
@@ -154,7 +163,11 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
                     contentDescription = "Open-AQ Data",
                     modifier = Modifier
                         .height(24.dp)
-                        .padding(start = 8.dp),
+                        .padding(start = 8.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() }, 
+                            indication = null
+                         ) { uriHandler.openUri("https://openaq.org/") },
                     alpha = 0.8f
                 )
             }
