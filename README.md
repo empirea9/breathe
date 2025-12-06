@@ -63,11 +63,28 @@ Publicly available AQI data for the Jammu & Kashmir region is currently unreliab
 
 **Breathe** aims to solve this by strictly curating sources and building a ground-truth network.
 
-The method that we use to convert the raw data in our API **(please do read the documentation)** was laid out by scanning past concentration trends from 2024-2022 of the J&K regions.
+The method that we use to convert the raw data in our API **(please do read the documentation)** was laid out by scanning past concentration trends from 2025-2022 of the J&K regions.
 
 ### Current Data Sources
-* **Open-Meteo:** Used for most data, it's results show way more accuracy than any other API so far, expect about ~90-95% accuracy in reference to ground data. It stays within the range of the actual AQI.
-* **OpenAQ (CPCB Mirror):** Direct integration with Central Pollution Control Board data where available (Srinagar, for now)
+**Open-Meteo**
+
+Used for most regions in Jammu & Kashmir (excluding Srinagar).
+Open-Meteo's satellite-based air quality model provides stable and consistent values that generally fall within the expected range of nearby ground measurements.
+
+Air quality & pollutant data: Open-Meteo Air Quality API - https://open-meteo.com/en/docs/air-quality-api
+
+Weather forecasts & historical data: https://Open-Meteo.com
+
+
+**OpenAQ (CPCB Mirror)**
+
+Used for the Srinagar region, where government ground sensor data is available.
+
+Data publisher: Central Pollution Control Board (CPCB) – https://cpcb.nic.in/
+
+Data access platform: OpenAQ – https://openaq.org
+
+This provides official measured pollutant concentrations where available.
 
 ### Call for Contributors (Hardware)
 The limitations of our current project is that we do not have ground sensors and are mostly relying on satellite data, so the data is **not 100%** accurate.

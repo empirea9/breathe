@@ -163,12 +163,78 @@ fun SettingsScreen(
 ) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
+    
+    var showDataSourceDialog by remember { mutableStateOf(false) }
 
     val currentVersion = try {
         // com.sidharthify.breathe.BuildConfig.VERSION_NAME
         "v2.2"
     } catch (e: Exception) {
         "Unknown"
+    }
+
+    if (showDataSourceDialog) {
+        AlertDialog(
+            onDismissRequest = { showDataSourceDialog = false },
+            title = { Text("Data Sources") },
+            text = {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "Jammu & Kashmir regions (excl. Srinagar)",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Air quality and weather data sourced from Open-Meteo.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = "https://open-meteo.com/",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.clickable { uriHandler.openUri("https://open-meteo.com/") }
+                        )
+                    }
+
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+                    Column {
+                        Text(
+                            text = "Srinagar region",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Air quality data sourced from OpenAQ, using measurements published by the Central Pollution Control Board (CPCB).",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Text(
+                                text = "cpcb.nic.in",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable { uriHandler.openUri("https://cpcb.nic.in/") }
+                            )
+                            Text(
+                                text = "openaq.org",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable { uriHandler.openUri("https://openaq.org/") }
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDataSourceDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
     }
 
     Column(
@@ -196,7 +262,12 @@ fun SettingsScreen(
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
         SettingsItem("Data Standards", "Indian National Air Quality Index (NAQI)")
-        SettingsItem("Sources", "OpenMeteo & OpenAQ")
+
+        SettingsItem(
+            title = "Data Sources", 
+            subtitle = "OpenMeteo & OpenAQ",
+            onClick = { showDataSourceDialog = true }
+        )
 
         SettingsItem(
             title = "Breathe OSS",
