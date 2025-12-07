@@ -1,3 +1,5 @@
+package com.sidharthify.breathe
+
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
