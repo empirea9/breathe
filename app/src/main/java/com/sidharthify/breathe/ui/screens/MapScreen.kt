@@ -1,4 +1,4 @@
-package com.sidharthify.breathe
+package com.sidharthify.breathe.ui.screens
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -33,6 +33,10 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import com.sidharthify.breathe.data.AqiResponse
+import com.sidharthify.breathe.data.Zone
+import com.sidharthify.breathe.ui.components.MainDashboardDetail
+import com.sidharthify.breathe.util.getAqiColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

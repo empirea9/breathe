@@ -1,4 +1,4 @@
-package com.sidharthify.breathe
+package com.sidharthify.breathe.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home

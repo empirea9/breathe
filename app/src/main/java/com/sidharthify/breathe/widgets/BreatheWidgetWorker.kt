@@ -11,7 +11,7 @@ import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.ListenableWorker.Result
-import com.sidharthify.breathe.RetrofitClient
+import com.sidharthify.breathe.data.RetrofitClient
 
 class BreatheWidgetWorker(
     private val context: Context,

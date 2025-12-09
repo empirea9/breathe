@@ -1,4 +1,4 @@
-package com.sidharthify.breathe
+package com.sidharthify.breathe.viewmodel
 
 import android.content.Context
 import android.widget.Toast
@@ -18,6 +18,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.URL
+import com.sidharthify.breathe.data.AqiResponse
+import com.sidharthify.breathe.data.AppState
+import com.sidharthify.breathe.data.RetrofitClient
+import com.sidharthify.breathe.data.Zone
+import com.sidharthify.breathe.forceWidgetUpdate
+import com.sidharthify.breathe.MainActivity
+import com.sidharthify.breathe.util.getAqiColor
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_AQI
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_PROVIDER
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_STATUS
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_ZONE_NAME
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_TOTAL_PINS
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_PM25
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_PM10
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_NO2
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_SO2
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_CO
+import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_O3
 
 class BreatheViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AppState())

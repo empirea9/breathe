@@ -26,7 +26,7 @@ import androidx.glance.text.TextStyle
 import androidx.glance.text.TextAlign
 import androidx.glance.unit.ColorProvider
 import com.sidharthify.breathe.MainActivity
-import com.sidharthify.breathe.getAqiColor
+import com.sidharthify.breathe.util.getAqiColor
 import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_AQI
 import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_PROVIDER
 import com.sidharthify.breathe.widgets.BreatheWidgetWorker.Companion.PREF_STATUS

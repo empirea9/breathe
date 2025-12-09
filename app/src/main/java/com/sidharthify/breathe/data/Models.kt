@@ -1,4 +1,4 @@
-package com.sidharthify.breathe
+package com.sidharthify.breathe.data
 
 import com.google.gson.annotations.SerializedName
 

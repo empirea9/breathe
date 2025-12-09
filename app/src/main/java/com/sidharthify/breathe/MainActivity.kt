@@ -26,6 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sidharthify.breathe.navigation.AppScreen
+import com.sidharthify.breathe.ui.screens.*
+import com.sidharthify.breathe.viewmodel.BreatheViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
