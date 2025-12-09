@@ -24,6 +24,7 @@
 * **Detailed Breakdown**
 * **A map with data laid across**
 * **24 Hour graph of AQI Data**
+* **Widget Support**
 
 ## Tech Stack
 
@@ -34,7 +35,37 @@
 * **Concurrency:** Kotlin Coroutines & Flow
 * **Theme:** Dynamic Material You (Monet)
 
-## Getting Started
+## Structure
+The project follows a standard but modularized android app structure.
+
+```app/src/main/java/com/sidharthify/breathe/
+├── data/                  # API interfaces and Data Models
+│   ├── BreatheApi.kt
+│   └── Models.kt
+├── navigation/            # Navigation menu
+│   └── Navigation.kt
+├── ui/                    # All UI related code
+│   ├── components/        # Reusable UI elements (Cards, Graphs, Dashboards)
+│   │   ├── CardComponents.kt
+│   │   ├── DashboardComponents.kt
+│   │   └── GraphComponents.kt
+│   └── screens/           # Full-page screen composables
+│       ├── ExploreScreen.kt
+│       ├── HomeScreen.kt
+│       ├── MapScreen.kt
+│       └── SettingsScreen.kt
+├── util/                  # Helper functions and extensions
+│   └── Utils.kt
+├── viewmodel/             # Caching and loading
+│   └── BreatheViewModel.kt
+├── widgets/               # Widget logic
+│   ├── BreatheWidget.kt
+│   ├── BreatheWidgetWorker.kt
+│   └── WidgetActions.kt
+└── MainActivity.kt        # Application Entry Point
+```
+
+## Build and deploy locally
 
 ### Prerequisites
 
@@ -45,17 +76,18 @@
 ### Installation
 
 1. **Clone the repository:**
+   `git clone https://github.com/breathe-OSS/breathe && cd breathe`
 
-   ```bash
-   git clone https://github.com/breathe-OSS/breathe
+2. **Open in Android Studio.**
+- Alternatively, if you have the command line launcher configured: `studio .`
 
-3. **Open in Android Studio.**
-4. **Configure the API Endpoint:**
-  - Open `app/src/main/java/com/sidharthify/breathe/BreatheApi.kt`.
+3. **Configure the API Endpoint:**
+  - Open `app/src/main/java/com/sidharthify/breathe/data/BreatheApi.kt`.
   - Update `BASE_URL` to point to your backend server (e.g., your local IP if running locally).
+
 4. **Build and Run:**
-  - Sync Gradle files.
-  - Select your device and click Run.
+  - GUI: Sync Gradle files, select your device, and click Run.
+  - Terminal: Ensure your device is connected (`adb devices`) and run: `./gradlew installDebug`
 
 ## AQI Data Providers
 ### Why this exists
@@ -65,30 +97,29 @@ Publicly available AQI data for the Jammu & Kashmir region is currently unreliab
 
 The method that we use to convert the raw data in our API **(please do read the documentation)** was laid out by scanning past concentration trends from 2025-2022 of the J&K regions.
 
-### Current Data Sources
-**Open-Meteo**
+## Current Data Sources
+### Open-Meteo
 
-Used for most regions in Jammu & Kashmir (excluding Srinagar).
+Used for **most regions** in Jammu & Kashmir (excluding Srinagar).
 Open-Meteo's satellite-based air quality model provides stable and consistent values that generally fall within the expected range of nearby ground measurements.
 
-Air quality & pollutant data: Open-Meteo Air Quality API - https://open-meteo.com/en/docs/air-quality-api
+- Air quality & pollutant data: [Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api)
 
-Weather forecasts & historical data: https://Open-Meteo.com
+- Weather forecasts & historical data: [Open-Meteo](https://open-meteo.com)
 
 
-**OpenAQ (CPCB Mirror)**
+### OpenAQ (CPCB Mirror)
 
-Used for the Srinagar region, where government ground sensor data is available.
+Used for the **Srinagar region**, where government ground sensor data is available.
 
-Data publisher: Central Pollution Control Board (CPCB) – https://cpcb.gov.in/
+- Data publisher: [Central Pollution Control Board (CPCB)](https://cpcb.gov.in/)
 
-Data access platform: OpenAQ – https://openaq.org
+- Data access platform: [OpenAQ](https://openaq.org)
 
 This provides official measured pollutant concentrations where available.
 
-### Call for Contributors (Hardware)
+## Call for Contributors (Hardware)
 The limitations of our current project is that we do not have ground sensors and are mostly relying on satellite data, so the data is **not 100%** accurate.
-
 
 We are actively working to deploy custom physical sensors to improve data density in Jammu. If you are interested in hosting a sensor node, please contact us at: [wednisegit@gmail.com](mailto:wednisegit@gmail.com)
 
