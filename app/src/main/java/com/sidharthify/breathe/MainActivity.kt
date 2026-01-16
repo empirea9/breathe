@@ -31,11 +31,15 @@ import com.sidharthify.breathe.ui.screens.HomeScreen
 import com.sidharthify.breathe.ui.screens.MapScreen
 import com.sidharthify.breathe.ui.screens.SettingsScreen
 import com.sidharthify.breathe.viewmodel.BreatheViewModel
+import org.osmdroid.config.Configuration
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val ctx = applicationContext
+        Configuration.getInstance().load(ctx, ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
 
         val prefs = getSharedPreferences("breathe_prefs", Context.MODE_PRIVATE)
 
