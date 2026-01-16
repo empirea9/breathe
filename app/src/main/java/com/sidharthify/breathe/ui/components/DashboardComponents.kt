@@ -57,68 +57,80 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
 
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
 
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                Icons.Filled.LocationOn,
+                null,
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                "Now Viewing",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = zone.zoneName,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                lineHeight = 40.sp,
+                modifier = Modifier.weight(1f, fill = false)
+            )
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.LocationOn,
-                    null,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Now Viewing",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
+            // Provider Info Group
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 16.dp)
+            ) {
+                if (isOpenMeteo) {
+                    val logo = if (isDarkTheme) R.drawable.open_meteo_logo else R.drawable.open_meteo_logo_light
+                    Image(
+                        painter = painterResource(id = logo),
+                        contentDescription = "Open-Meteo Data",
+                        modifier = Modifier
+                            .height(24.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { uriHandler.openUri("https://open-meteo.com/") },
+                        alpha = 0.8f
+                    )
+                }
 
-            if (isOpenMeteo) {
-                val logo = if (isDarkTheme) R.drawable.open_meteo_logo else R.drawable.open_meteo_logo_light
-                Image(
-                    painter = painterResource(id = logo),
-                    contentDescription = "Open-Meteo Data",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(start = 8.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() }, 
-                            indication = null
-                         ) { uriHandler.openUri("https://open-meteo.com/") },
-                    alpha = 0.8f
-                )
-            }
+                if (isAirGradient) {
+                    Text(
+                        text = "Realtime ground sensor data",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
 
-            if (isAirGradient) {
-                Image(
-                    painter = painterResource(id = R.drawable.air_gradient_logo),
-                    contentDescription = "Open-AQ Data",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(start = 8.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() }, 
-                            indication = null
-                         ) { uriHandler.openUri("https://www.airgradient.com/") },
-                    alpha = 0.8f
-                )
+                    Image(
+                        painter = painterResource(id = R.drawable.air_gradient_logo),
+                        contentDescription = "AirGradient Data",
+                        modifier = Modifier
+                            .height(24.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { uriHandler.openUri("https://www.airgradient.com/") },
+                        alpha = 0.8f
+                    )
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            zone.zoneName,
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            maxLines = 2,
-            lineHeight = 40.sp
-        )
+        
         Spacer(modifier = Modifier.height(24.dp))
 
         Card(
