@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.SmokingRooms
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,27 +30,52 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sidharthify.breathe.R
 import com.sidharthify.breathe.data.AqiResponse
-import com.sidharthify.breathe.expressiveClickable // Make sure this import works
+import com.sidharthify.breathe.expressiveClickable
 import com.sidharthify.breathe.util.getAqiColor
 import com.sidharthify.breathe.util.getTimeAgo
 import com.sidharthify.breathe.util.formatPollutantName
+import com.sidharthify.breathe.util.calculateCigarettes
+import com.sidharthify.breathe.util.calculateUsAqi 
 import kotlin.math.ceil
 
 @Composable
-fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boolean) {
+fun MainDashboardDetail(
+    zone: AqiResponse, 
+    provider: String?, 
+    isDarkTheme: Boolean,
+    isUsAqi: Boolean = false
+) {
+    val pm25 = zone.concentrations?.get("pm2.5") 
+        ?: zone.concentrations?.get("pm2_5") 
+        ?: 0.0
+
+    val displayAqi = if (isUsAqi) {
+        zone.usAqi ?: if (pm25 > 0) calculateUsAqi(pm25) else 0
+    } else {
+        zone.nAqi
+    }
+    
+    val aqiLabel = if (isUsAqi) "US AQI" else "NAQI"
+    val cigarettes = if (pm25 > 0) calculateCigarettes(pm25) else 0.0
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    // If screen is narrow (<390dp), reduce font to prevent line wrap
+    val aqiFontSize = if (screenWidth < 390) 64.sp else 84.sp
+    val aqiLineHeight = if (screenWidth < 390) 64.sp else 84.sp
+
     val aqiColor by animateColorAsState(
-        targetValue = getAqiColor(zone.nAqi),
+        targetValue = getAqiColor(displayAqi, isUsAqi),
         animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
         label = "DashboardColor",
     )
 
     val animatedAqi by animateIntAsState(
-        targetValue = zone.nAqi,
+        targetValue = displayAqi,
         animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
         label = "DashboardNumber"
     )
 
-    // Breathe! Breathe in the air, don't be afraid to care! (this is kinda ass)
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val breatheScale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -70,7 +97,6 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
 
     Column(modifier = Modifier.padding(vertical = 12.dp)) {
 
-        // --- Header ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,7 +105,6 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
             verticalAlignment = Alignment.Top 
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                // Location Pill
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
                     shape = RoundedCornerShape(100),
@@ -157,7 +182,6 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
         
         Spacer(modifier = Modifier.height(24.dp))
 
-        // --- Hero Card ---
         Box(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
@@ -189,11 +213,11 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
                 ) {
                     Text(
                         text = "$animatedAqi",
-                        style = MaterialTheme.typography.displayLarge.copy(fontSize = 84.sp),
+                        style = MaterialTheme.typography.displayLarge.copy(fontSize = aqiFontSize),
                         fontWeight = FontWeight.Black,
                         color = aqiColor,
                         letterSpacing = (-3).sp,
-                        lineHeight = 84.sp
+                        lineHeight = aqiLineHeight
                     )
                     Surface(
                         color = aqiColor,
@@ -202,7 +226,7 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
                     ) {
                         Text(
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            text = "NAQI",
+                            text = aqiLabel,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
@@ -265,6 +289,46 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Cigarette Equivalence Card
+        if (cigarettes > 0.1) {
+             Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .expressiveClickable {}
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.medium),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Filled.SmokingRooms, null, tint = MaterialTheme.colorScheme.onErrorContainer)
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            "≈ $cigarettes cigarettes",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Equivalent PM2.5 inhalation today",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
         val pollutants = zone.concentrations ?: emptyMap()
         if (pollutants.isNotEmpty()) {
             Text(
@@ -283,10 +347,12 @@ fun MainDashboardDetail(zone: AqiResponse, provider: String?, isDarkTheme: Boole
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // --- History Graph ---
         if (!zone.history.isNullOrEmpty()) {
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                AqiHistoryGraph(history = zone.history)
+                AqiHistoryGraph(
+                    history = zone.history,
+                    isUsAqi = isUsAqi
+                )
             }
         }
         
@@ -327,7 +393,6 @@ fun SimpleFlowGrid(
 fun PollutantChip(key: String, value: Double, modifier: Modifier = Modifier) {
     val unit = if (key.lowercase() == "co") "mg/m³" else "µg/m³"
     
-    // apply expressiveClickable
     Box(
         modifier = modifier
             .height(80.dp)

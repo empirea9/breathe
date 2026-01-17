@@ -23,12 +23,29 @@ import androidx.compose.ui.unit.dp
 import com.sidharthify.breathe.data.AqiResponse
 import com.sidharthify.breathe.data.Zone
 import com.sidharthify.breathe.util.getAqiColor
-import com.sidharthify.breathe.expressiveClickable // Ensure this matches your package structure
+import com.sidharthify.breathe.expressiveClickable
+import com.sidharthify.breathe.util.calculateUsAqi
 
 @Composable
-fun PinnedMiniCard(zone: AqiResponse, isSelected: Boolean, onClick: () -> Unit) {
+fun PinnedMiniCard(
+    zone: AqiResponse, 
+    isSelected: Boolean, 
+    isUsAqi: Boolean = false,
+    onClick: () -> Unit
+) {
+    // Calculate display AQI based on standard
+    val pm25 = zone.concentrations?.get("pm2.5") 
+        ?: zone.concentrations?.get("pm2_5") 
+        ?: 0.0
+
+    val displayAqi = if (isUsAqi) {
+        zone.usAqi ?: if (pm25 > 0) calculateUsAqi(pm25) else 0
+    } else {
+        zone.nAqi
+    }
+
     val aqiColor by animateColorAsState(
-        targetValue = getAqiColor(zone.nAqi),
+        targetValue = getAqiColor(displayAqi, isUsAqi),
         animationSpec = tween(durationMillis = 300),
         label = "MiniCardColor"
     )
@@ -64,7 +81,7 @@ fun PinnedMiniCard(zone: AqiResponse, isSelected: Boolean, onClick: () -> Unit) 
                     Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(aqiColor))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "${zone.nAqi}",
+                        text = "$displayAqi",
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Black,
                         color = contentColor

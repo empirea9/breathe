@@ -109,6 +109,9 @@ fun BreatheApp(
 
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+
+    val isUsAqi by viewModel.isUsAqi.collectAsState()
+    
     var currentScreen by remember { mutableStateOf(AppScreen.Home) }
 
     Surface(
@@ -165,6 +168,7 @@ fun BreatheApp(
                                     allAqiData = uiState.allAqiData,
                                     pinnedIds = uiState.pinnedIds,
                                     isDarkTheme = isDarkTheme,
+                                    isUsAqi = isUsAqi,
                                     onPinToggle = { id -> viewModel.togglePin(context, id) }
                                 )
                                 AppScreen.Explore -> ExploreScreen(

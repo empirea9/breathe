@@ -9,7 +9,6 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.util.LruCache
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -41,6 +40,7 @@ import com.sidharthify.breathe.data.AqiResponse
 import com.sidharthify.breathe.data.Zone
 import com.sidharthify.breathe.ui.components.MainDashboardDetail
 import com.sidharthify.breathe.util.getAqiColor
+import com.sidharthify.breathe.util.calculateUsAqi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,19 +49,18 @@ fun MapScreen(
     allAqiData: List<AqiResponse>,
     pinnedIds: Set<String>,
     isDarkTheme: Boolean,
+    isUsAqi: Boolean,
     onPinToggle: (String) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     
-    // Cache for marker bitmaps to prevent allocation churn.
     val bitmapCache = remember { LruCache<String, Bitmap>(50) }
 
     val startPoint = remember { GeoPoint(34.0837, 74.7973) }
     var selectedZoneData by remember { mutableStateOf<AqiResponse?>(null) }
     var mapViewRef by remember { mutableStateOf<MapView?>(null) }
 
-    // Initialize OSMDroid config once
     LaunchedEffect(Unit) {
         Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
     }
@@ -122,8 +121,8 @@ fun MapScreen(
                 }
             }
 
-            // Update Markers only when data changes
-            LaunchedEffect(mapViewRef, zones, allAqiData) {
+            // Updated logic to use isUsAqi for coloring
+            LaunchedEffect(mapViewRef, zones, allAqiData, isUsAqi) {
                 val map = mapViewRef ?: return@LaunchedEffect
 
                 map.overlays.clear()
@@ -136,15 +135,29 @@ fun MapScreen(
                         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
 
                         val data = allAqiData.find { it.zoneId == zone.id }
-                        val aqiText = data?.nAqi?.toString() ?: ""
+                        
+                        var displayAqi = 0
+
+                        if (data != null) {
+                            val pm25 = data.concentrations?.get("pm2.5") 
+                                ?: data.concentrations?.get("pm2_5") 
+                                ?: 0.0
+                                
+                            displayAqi = if (isUsAqi) {
+                                data.usAqi ?: if (pm25 > 0) calculateUsAqi(pm25) else 0
+                            } else {
+                                data.nAqi
+                            }
+                        }
+
+                        val aqiText = if (data != null) displayAqi.toString() else ""
                         
                         val colorInt = if (data != null) {
-                            getAqiColor(data.nAqi).toArgb()
+                            getAqiColor(displayAqi, isUsAqi).toArgb()
                         } else {
                             android.graphics.Color.GRAY
                         }
 
-                        // Check cache first
                         val cacheKey = "$aqiText-$colorInt"
                         var bitmap = bitmapCache.get(cacheKey)
 
@@ -167,7 +180,6 @@ fun MapScreen(
                 map.invalidate()
             }
 
-            // Custom MD3 Zoom Controls
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
@@ -204,7 +216,14 @@ fun MapScreen(
                         .padding(bottom = 48.dp)
                 ) {
                     val provider = zones.find { it.id == selectedZoneData!!.zoneId }?.provider
-                    MainDashboardDetail(selectedZoneData!!, provider, isDarkTheme)
+                    
+                    // Pass isUsAqi here too
+                    MainDashboardDetail(
+                        zone = selectedZoneData!!, 
+                        provider = provider, 
+                        isDarkTheme = isDarkTheme,
+                        isUsAqi = isUsAqi
+                    )
 
                     val isPinned = pinnedIds.contains(selectedZoneData!!.zoneId)
                     Box(Modifier.padding(horizontal = 24.dp)) {
@@ -223,7 +242,6 @@ fun MapScreen(
     }
 }
 
-// Separated Bitmap generation from Drawable creation for caching
 fun createMarkerBitmap(context: Context, text: String, color: Int): Bitmap {
     val density = context.resources.displayMetrics.density
     val sizePx = (40 * density).toInt()

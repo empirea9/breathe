@@ -52,6 +52,7 @@ fun SettingsScreen(
 
     var easterEggCounter by remember { mutableIntStateOf(0) }
     var isMadness by remember { mutableStateOf(false) }
+    val isUsAqi by viewModel.isUsAqi.collectAsState()
     var versionLabel by remember { mutableStateOf("Current Version: v3.0-9") }
     
     val currentVersion = "v3.0-9" 
@@ -230,7 +231,17 @@ fun SettingsScreen(
 
         // #### general #### //
         SettingsGroup(title = "General", isAmoled = isAmoled) {
-            SettingsItem("Data Standards", "Indian National Air Quality Index (NAQI)", showDivider = true)
+            SettingsSwitch(
+                title = "US AQI Standard",
+                subtitle = "Use United States EPA calculation",
+                checked = isUsAqi,
+                onCheckedChange = { viewModel.toggleAqiStandard(context) },
+                showDivider = true
+            )
+
+            val standardText = if (isUsAqi) "US EPA (2024 Standard)" else "Indian National Air Quality Index (NAQI)"
+            
+            SettingsItem("Data Standards", standardText, showDivider = true)
             SettingsItem("Data Sources", "OpenMeteo & AirGradient ground sensors", onClick = { showDataSourceDialog = true }, showDivider = true)
             SettingsItem("Breathe OSS", "View Source on GitHub", onClick = { uriHandler.openUri("https://github.com/breathe-OSS/breathe") }, showDivider = false)
         }
@@ -380,6 +391,38 @@ fun SettingsItem(
             if(onClick != null) {
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+        }
+        if (showDivider) {
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun SettingsSwitch(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    showDivider: Boolean = true
+) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .expressiveClickable { onCheckedChange(!checked) }
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Switch(checked = checked, onCheckedChange = onCheckedChange)
         }
         if (showDivider) {
             HorizontalDivider(
