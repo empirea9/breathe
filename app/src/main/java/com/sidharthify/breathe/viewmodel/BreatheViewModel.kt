@@ -75,7 +75,7 @@ class BreatheViewModel : ViewModel() {
 
     fun refreshData(context: Context, isAutoRefresh: Boolean = false) {
         viewModelScope.launch {
-            if (_uiState.value.allAqiData.isEmpty() && !isAutoRefresh) {
+            if (!isAutoRefresh) {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             }
 
@@ -97,7 +97,7 @@ class BreatheViewModel : ViewModel() {
                 val pinnedResults = pinnedJobs.awaitAll().filterNotNull()
 
                 _uiState.value = _uiState.value.copy(
-                    isLoading = false,
+                    isLoading = false, // loading finishes here
                     allAqiData = pinnedResults, 
                     pinnedZones = pinnedResults,
                     pinnedIds = pinnedSet
