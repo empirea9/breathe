@@ -31,7 +31,8 @@ data class AqiResponse(
     @SerializedName("last_update") val lastUpdateStr: String?,
     @SerializedName("history") val history: List<HistoryPoint>? = emptyList(),
     @SerializedName("trends") val trends: Trends? = null,
-    @SerializedName("warning") val warning: String? = null
+    @SerializedName("warning") val warning: String? = null,
+    @SerializedName("source") val source: String? = null
 )
 
 data class HistoryPoint(

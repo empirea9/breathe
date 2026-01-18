@@ -43,7 +43,7 @@ class BreatheWidgetWorker(
 
         val appPrefs = context.getSharedPreferences("breathe_prefs", Context.MODE_PRIVATE)
         val pinnedIds = (appPrefs.getStringSet("pinned_ids", emptySet()) ?: emptySet()).sorted()
-        val isUsAqi = appPrefs.getBoolean("is_us_aqi", false) // READ PREF
+        val isUsAqi = appPrefs.getBoolean("is_us_aqi", false)
 
         glanceIds.forEach { glanceId ->
             try {
@@ -82,8 +82,13 @@ class BreatheWidgetWorker(
         try {
             val response = RetrofitClient.api.getZoneAqi(currentZoneId)
             val concentrations = response.concentrations ?: emptyMap()
-            
-            val providerName = if(currentZoneId.contains("srinagar", true)) "AirGradient" else "OpenMeteo"
+
+            val source = response.source ?: ""
+            val providerName = if (source.contains("airgradient", ignoreCase = true)) {
+                "AirGradient"
+            } else {
+                "OpenMeteo"
+            }
 
             updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
                 prefs.toMutablePreferences().apply {
@@ -94,7 +99,7 @@ class BreatheWidgetWorker(
                     this[PREF_STATUS] = "Success"
                     this[PREF_CURRENT_INDEX] = currentIndex
                     this[PREF_TOTAL_PINS] = pinnedIds.size
-                    this[PREF_IS_US_AQI] = isUsAqi // STORE IN WIDGET STATE
+                    this[PREF_IS_US_AQI] = isUsAqi
 
                     this[PREF_PM25] = concentrations["pm2_5"] ?: -1.0
                     this[PREF_PM10] = concentrations["pm10"] ?: -1.0
