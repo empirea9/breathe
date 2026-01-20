@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
@@ -47,6 +48,7 @@ import com.sidharthify.breathe.expressiveClickable
 import com.sidharthify.breathe.util.calculateCigarettes
 import com.sidharthify.breathe.util.calculateUsAqi
 import com.sidharthify.breathe.util.formatPollutantName
+import com.sidharthify.breathe.util.getAqiCategory
 import com.sidharthify.breathe.util.getAqiColor
 import com.sidharthify.breathe.util.getTimeAgo
 import kotlin.math.ceil
@@ -64,6 +66,26 @@ class SoftBurstShape : Shape {
                 radius = radius,
                 innerRadius = radius * 0.7f,
                 rounding = CornerRounding(radius * 0.2f),
+                centerX = size.width / 2f,
+                centerY = size.height / 2f,
+            )
+        return Outline.Generic(polygon.toPath().asComposePath())
+    }
+}
+
+class CookieShape : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Outline {
+        val radius = size.minDimension / 2f
+        val polygon =
+            RoundedPolygon.star(
+                numVerticesPerRadius = 4,
+                radius = radius,
+                innerRadius = radius * 0.8f,
+                rounding = CornerRounding(radius * 0.4f),
                 centerX = size.width / 2f,
                 centerY = size.height / 2f,
             )
@@ -391,6 +413,129 @@ fun MainDashboardDetail(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                         textAlign = TextAlign.End,
                     )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // AQI Category Card with Spectrum
+        val aqiCategory = getAqiCategory(displayAqi, isUsAqi)
+        
+        // Calculate position on spectrum (0-500 for US, 0-500 for NAQI)
+        val maxAqi = if (isUsAqi) 500f else 500f
+        val targetIndicatorPosition = (displayAqi.coerceIn(0, 500) / maxAqi).coerceIn(0f, 1f)
+        
+        // Animate indicator position
+        val animatedIndicatorPosition by animateFloatAsState(
+            targetValue = targetIndicatorPosition,
+            animationSpec = if (animationSettings.numberAnimations) {
+                tween(durationMillis = 800, easing = FastOutSlowInEasing)
+            } else {
+                tween(durationMillis = 0)
+            },
+            label = "IndicatorPosition",
+        )
+        
+        val spectrumColors = if (isUsAqi) {
+            listOf(
+                Color(0xFF00E400),
+                Color(0xFFFFFF00),
+                Color(0xFFFF7E00),
+                Color(0xFFFF0000),
+                Color(0xFF8F3F97),
+                Color(0xFF7E0023)
+            )
+        } else {
+            listOf(
+                Color(0xFF55A84F),
+                Color(0xFFA3C853),
+                Color(0xFFFDD74B),
+                Color(0xFFFB9A34),
+                Color(0xFFE93F33),
+                Color(0xFFAF2D24)
+            )
+        }
+        
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            ),
+            shape = MaterialTheme.shapes.medium,
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .expressiveClickable {},
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = aqiCategory.label,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = aqiColor,
+                    )
+                    Text(
+                        text = aqiCategory.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // Spectrum meter
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(28.dp),
+                ) {
+                    // Gradient bar
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .align(Alignment.Center)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(
+                                Brush.horizontalGradient(spectrumColors)
+                            ),
+                    )
+                    
+                    // Indicator
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(28.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(animatedIndicatorPosition.coerceAtLeast(0.01f))
+                                .align(Alignment.CenterStart),
+                            contentAlignment = Alignment.CenterEnd,
+                        ) {
+                            // Circle indicator
+                            Surface(
+                                modifier = Modifier.size(16.dp),
+                                shape = CircleShape,
+                                color = aqiColor,
+                                shadowElevation = 4.dp,
+                                border = androidx.compose.foundation.BorderStroke(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.surface
+                                ),
+                            ) {}
+                        }
+                    }
                 }
             }
         }

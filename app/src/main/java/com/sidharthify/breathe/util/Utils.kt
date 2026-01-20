@@ -98,3 +98,34 @@ private fun linearInterp(
     iLow: Int,
     iHigh: Int,
 ): Int = (((iHigh - iLow) / (cHigh - cLow)) * (c - cLow) + iLow).roundToInt()
+
+data class AqiCategory(
+    val label: String,
+    val description: String,
+)
+
+fun getAqiCategory(
+    aqi: Int,
+    isUsStandard: Boolean = false,
+): AqiCategory {
+    if (isUsStandard) {
+        return when (aqi) {
+            in 0..50 -> AqiCategory("Good", "Air quality is satisfactory")
+            in 51..100 -> AqiCategory("Moderate", "Acceptable air quality")
+            in 101..150 -> AqiCategory("Unhealthy for Sensitive Groups", "May affect sensitive individuals")
+            in 151..200 -> AqiCategory("Unhealthy", "Everyone may experience health effects")
+            in 201..300 -> AqiCategory("Very Unhealthy", "Health alert: serious effects")
+            else -> AqiCategory("Hazardous", "Health emergency conditions")
+        }
+    }
+
+    // NAQI (Indian) Categories
+    return when (aqi) {
+        in 0..50 -> AqiCategory("Good", "Minimal impact on health")
+        in 51..100 -> AqiCategory("Satisfactory", "Minor breathing discomfort")
+        in 101..200 -> AqiCategory("Moderate", "Breathing discomfort to sensitive people")
+        in 201..300 -> AqiCategory("Poor", "Breathing discomfort on prolonged exposure")
+        in 301..400 -> AqiCategory("Very Poor", "Respiratory illness on prolonged exposure")
+        else -> AqiCategory("Severe", "Serious health impacts on everyone")
+    }
+}
