@@ -62,8 +62,16 @@ fun HomeScreen(
     LaunchedEffect(pinnedZones) {
         if (selectedZone == null && pinnedZones.isNotEmpty()) {
             selectedZone = pinnedZones.first()
-        } else if (pinnedZones.isNotEmpty() && !pinnedZones.any { it.zoneId == selectedZone?.zoneId }) {
-            selectedZone = pinnedZones.first()
+        } else if (pinnedZones.isNotEmpty()) {
+            // Find the updated version of the currently selected zone
+            val updatedZone = pinnedZones.find { it.zoneId == selectedZone?.zoneId }
+            if (updatedZone != null) {
+                // Update with fresh data
+                selectedZone = updatedZone
+            } else {
+                // Select first available
+                selectedZone = pinnedZones.first()
+            }
         }
     }
 
