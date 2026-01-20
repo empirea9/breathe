@@ -24,6 +24,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -58,6 +59,7 @@ fun SettingsScreen(
 
     var easterEggCounter by remember { mutableIntStateOf(0) }
     var isMadness by remember { mutableStateOf(false) }
+    var madnessIntensity by remember { mutableIntStateOf(0) }
     val isUsAqi by viewModel.isUsAqi.collectAsState()
     var versionLabel by remember { mutableStateOf("Current Version: v3.0-11") }
 
@@ -65,7 +67,7 @@ fun SettingsScreen(
 
     // Reset tap counter if inactive
     LaunchedEffect(easterEggCounter) {
-        if (easterEggCounter > 0) {
+        if (easterEggCounter > 0 && !isMadness) {
             delay(2000)
             easterEggCounter = 0
         }
@@ -74,13 +76,24 @@ fun SettingsScreen(
     // Remember when you were young?
     val infiniteTransition = rememberInfiniteTransition(label = "madness")
 
+    // Hue rotation for psychedelic colors
+    val hueRotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "hueRotation",
+    )
+
     // You shone like the sun.
     val madnessRotation by infiniteTransition.animateFloat(
-        initialValue = -3f,
-        targetValue = 3f,
+        initialValue = -8f,
+        targetValue = 8f,
         animationSpec =
             infiniteRepeatable(
-                animation = tween(2500, easing = LinearEasing),
+                animation = tween(1500, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse,
             ),
         label = "rotation",
@@ -88,11 +101,11 @@ fun SettingsScreen(
 
     // Shine on, you crazy diamond!
     val madnessScale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
-        targetValue = 1.05f,
+        initialValue = 0.92f,
+        targetValue = 1.08f,
         animationSpec =
             infiniteRepeatable(
-                animation = tween(4000, easing = FastOutSlowInEasing),
+                animation = tween(2000, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse,
             ),
         label = "scale",
@@ -100,14 +113,38 @@ fun SettingsScreen(
 
     // Now there's a look in your eyes, like black holes in the sky.
     val madnessDrift by infiniteTransition.animateFloat(
-        initialValue = -15f,
-        targetValue = 15f,
+        initialValue = -25f,
+        targetValue = 25f,
         animationSpec =
             infiniteRepeatable(
-                animation = tween(3200, easing = FastOutSlowInEasing),
+                animation = tween(1800, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse,
             ),
         label = "drift",
+    )
+
+    // Vertical wobble
+    val madnessVertical by infiniteTransition.animateFloat(
+        initialValue = -10f,
+        targetValue = 10f,
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(2200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+        label = "vertical",
+    )
+
+    // Skew effect
+    val madnessSkew by infiniteTransition.animateFloat(
+        initialValue = -5f,
+        targetValue = 5f,
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(2800, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+        label = "skew",
     )
 
     var showDataSourceDialog by remember { mutableStateOf(false) }
@@ -206,14 +243,29 @@ fun SettingsScreen(
                 // Shine on you crazy diamond!
                 .graphicsLayer {
                     if (isMadness) {
-                        scaleX = madnessScale
-                        scaleY = madnessScale
-                        rotationZ = madnessRotation
-                        translationX = madnessDrift
+                        val intensity = madnessIntensity.coerceIn(1, 3)
+                        scaleX = 1f + (madnessScale - 1f) * intensity * 0.5f
+                        scaleY = 1f + (madnessScale - 1f) * intensity * 0.5f
+                        rotationZ = madnessRotation * intensity * 0.7f
+                        translationX = madnessDrift * intensity * 0.6f
+                        translationY = madnessVertical * intensity * 0.4f
+                        rotationX = madnessSkew * intensity * 0.3f
                     }
                 },
     ) {
-        Text("Settings", style = MaterialTheme.typography.displayMedium, fontWeight = FontWeight.Bold)
+        // Rainbow tint overlay when in madness mode
+        val textColor = if (isMadness) {
+            Color.hsl(hueRotation, 0.7f, 0.6f)
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+        
+        Text(
+            "Settings", 
+            style = MaterialTheme.typography.displayMedium, 
+            fontWeight = FontWeight.Bold,
+            color = textColor
+        )
         Spacer(modifier = Modifier.height(24.dp))
 
         // #### appearance #### //
@@ -483,19 +535,26 @@ fun SettingsScreen(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                         ) {
-                            easterEggCounter++
-                            if (easterEggCounter >= 7) {
-                                easterEggCounter = 0
+                            if (!isMadness) {
+                                easterEggCounter++
+                                if (easterEggCounter >= 7) {
+                                    easterEggCounter = 0
+                                    madnessIntensity = 2
 
-                                // Tribute
-                                isMadness = true
-                                Toast.makeText(context, "Shine on, you crazy diamond!", Toast.LENGTH_LONG).show()
+                                    // Tribute
+                                    isMadness = true
+                                    versionLabel = "For Syd (1946-2006)"
+                                    Toast.makeText(context, "Shine on, you crazy diamond!", Toast.LENGTH_LONG).show()
 
-                                // Revert after 10 seconds (enough madness)
-                                scope.launch {
-                                    delay(10000)
-                                    isMadness = false
-                                    versionLabel = "Current Version: $currentVersion"
+                                    // Calm down after a while
+                                    scope.launch {
+                                        delay(12000)
+                                        versionLabel = "For Syd (1946-2006)"
+                                        delay(8000)
+                                        isMadness = false
+                                        madnessIntensity = 0
+                                        versionLabel = "Current Version: $currentVersion"
+                                    }
                                 }
                             }
                         },
@@ -503,7 +562,9 @@ fun SettingsScreen(
                     Text(
                         text = versionLabel,
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (isMadness) Color.hsl(hueRotation, 0.8f, 0.65f) 
+                               else MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = if (isMadness) FontWeight.Bold else FontWeight.Normal,
                     )
                 }
 
