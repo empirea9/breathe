@@ -1,5 +1,13 @@
 package com.sidharthify.breathe
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import android.app.Activity
 import android.content.Context
 import android.os.Build
@@ -12,11 +20,9 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -25,7 +31,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -34,10 +39,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sidharthify.breathe.navigation.AppScreen
+import com.sidharthify.breathe.ui.components.MorphingPill
 import com.sidharthify.breathe.ui.screens.ExploreScreen
 import com.sidharthify.breathe.ui.screens.HomeScreen
 import com.sidharthify.breathe.ui.screens.MapScreen
@@ -222,12 +227,11 @@ fun BreatheApp(
                 ) {
                     AppScreen.entries.forEach { screen ->
                         val isSelected = currentScreen == screen
-                        
+                        val targetShape=screen.shape
                         val iconColor by animateColorAsState(
                             targetValue = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                             label = "IconColor"
                         )
-                        
                         val pillColor by animateColorAsState(
                             targetValue = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
                             label = "PillColor"
@@ -241,13 +245,14 @@ fun BreatheApp(
                                 .expressiveClickable { currentScreen = screen },
                             contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .height(40.dp)
-                                    .width(64.dp)
-                                    .background(color = pillColor, shape = RoundedCornerShape(100))
+                            MorphingPill(
+                                isSelected = isSelected,
+                                from = MaterialShapes.Circle,
+                                to = targetShape, 
+                                color = pillColor,
+                                modifier = Modifier.size(50.dp)
                             )
-                            
+
                             Icon(
                                 if (isSelected) screen.iconFilled else screen.iconOutlined,
                                 contentDescription = screen.label,
