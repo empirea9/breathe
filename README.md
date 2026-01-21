@@ -43,16 +43,18 @@
 The project follows a standard but modularized android app structure.
 
 ```app/src/main/java/com/sidharthify/breathe/
-├── data/                  # API interfaces and Data Models
+├── data/    
+│   ├── AnimationSettings.kt
 │   ├── BreatheApi.kt
 │   └── Models.kt
-├── navigation/            # Navigation menu
+├── navigation/
 │   └── Navigation.kt
 ├── ui/                    # All UI related code
 │   ├── components/        # Reusable UI elements (Cards, Graphs, Dashboards)
 │   │   ├── CardComponents.kt
 │   │   ├── DashboardComponents.kt
 │   │   └── GraphComponents.kt
+│   │   └── MorphingPill.kt
 │   └── screens/           # Full-page screen composables
 │       ├── ExploreScreen.kt
 │       ├── HomeScreen.kt
@@ -60,6 +62,7 @@ The project follows a standard but modularized android app structure.
 │       └── SettingsScreen.kt
 ├── util/                  # Helper functions and extensions
 │   └── Utils.kt
+│   └── IndiaBoundaryOverlay.kt
 ├── viewmodel/             # Caching and loading
 │   └── BreatheViewModel.kt
 ├── widgets/               # Widget logic
@@ -130,8 +133,6 @@ This provides accurate values of PM10 and PM2.5. Other values are fetched from O
 The limitations of our current project is that we do not have ground sensors in every region and are mostly relying on satellite data, so the data is **not 100%** accurate.
 
 We are actively working to deploy custom physical sensors to improve data density in Jammu. If you are interested in hosting a sensor node, please contact us at: [wednisegit@gmail.com](mailto:wednisegit@gmail.com)
-
-We have emailed **AQI.in** (an Indian company with local ground community sensors) and **Caeli** (satellite based) for use of their API and free research plans if any.
 
 We have deployed two **AirGradient** sensors in Jammu and Srinagar which provide an accurate measurement of PM10 and PM2.5 values. We are working
 to deploy them in two other regions; Kishtwar and Reasi.
