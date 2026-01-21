@@ -15,9 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import com.sidharthify.breathe.data.LocalAnimationSettings
 import com.sidharthify.breathe.data.Zone
-import com.sidharthify.breathe.expressiveClickable // Import
+import com.sidharthify.breathe.expressiveClickable
 import com.sidharthify.breathe.ui.components.ErrorCard
 import com.sidharthify.breathe.ui.components.ZoneListItem
 
@@ -45,7 +46,7 @@ fun ExploreScreen(
 
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp)) {
         Spacer(modifier = Modifier.height(24.dp))
-        Text("Explore", style = MaterialTheme.typography.displayMedium)
+        Text("Explore", style = MaterialTheme.typography.displayMedium, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
 
         // Search Bar
