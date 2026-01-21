@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
@@ -160,6 +161,11 @@ fun BreatheApp(
     val isUsAqi by viewModel.isUsAqi.collectAsState()
 
     var currentScreen by remember { mutableStateOf(AppScreen.Home) }
+
+    // navigate to Home first, then exit
+    BackHandler(enabled = currentScreen != AppScreen.Home) {
+        currentScreen = AppScreen.Home
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
