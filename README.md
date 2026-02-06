@@ -16,6 +16,12 @@
 
 - Check the [**breathe api**](https://github.com/breathe-OSS/api?tab=readme-ov-file#how-the-aqi-is-calculated) repo to know how the AQI is calculated.
 
+## Download
+
+[<img alt="Get it on Google Play" height="80" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=com.sidharthify.breathe)
+
+---
+
 ## Features
 
 - **Material Design 3 Expressive**
