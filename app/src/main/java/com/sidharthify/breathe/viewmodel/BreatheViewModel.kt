@@ -54,7 +54,7 @@ class BreatheViewModel : ViewModel() {
         pollingJob =
             viewModelScope.launch {
                 while (isActive) {
-                    delay(60000) // auto refresh every 60 seconds
+                    delay(960000) // auto refresh every 16 minutes
                     refreshData(context, isAutoRefresh = true)
                 }
             }
