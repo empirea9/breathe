@@ -141,7 +141,7 @@ This provides accurate values of PM10 and PM2.5. Other values are fetched from O
 
 The limitations of our current project is that we do not have ground sensors in every region and are mostly relying on satellite data, so the data is **not 100%** accurate.
 
-We are actively working to deploy custom physical sensors to improve data density in Jammu. If you are interested in hosting a sensor node, please contact us at: [wednisegit@gmail.com](mailto:wednisegit@gmail.com)
+We are actively working to deploy custom physical sensors to improve data density in Jammu. If you are interested in hosting a sensor node, please contact us at: [contact@breatheoss.app](mailto:contact@breatheoss.app)
 
 We have deployed two **AirGradient** sensors in Jammu, Srinagar and Rajouri which provide an accurate measurement of PM10 and PM2.5 values. We are working
 to deploy them in three other regions.
