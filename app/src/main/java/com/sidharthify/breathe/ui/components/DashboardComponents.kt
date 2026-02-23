@@ -674,7 +674,7 @@ fun PollutantChip(
     value: Double,
     modifier: Modifier = Modifier,
 ) {
-    val unit = if (key.lowercase() == "co") "mg/m³" else "µg/m³"
+    val unit = if (key.lowercase() in listOf("ch4", "co")) "mg/m³" else "µg/m³"
 
     Box(
         modifier =
