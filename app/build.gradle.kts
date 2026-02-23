@@ -74,4 +74,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
     implementation("androidx.compose.material3:material3:1.4.0")
+    testImplementation("junit:junit:4.13.2")
 }
