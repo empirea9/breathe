@@ -45,6 +45,7 @@ import com.sidharthify.breathe.R
 import com.sidharthify.breathe.data.AqiResponse
 import com.sidharthify.breathe.data.LocalAnimationSettings
 import com.sidharthify.breathe.expressiveClickable
+import com.sidharthify.breathe.util.calculateChange1h
 import com.sidharthify.breathe.util.calculateCigarettes
 import com.sidharthify.breathe.util.calculateUsAqi
 import com.sidharthify.breathe.util.formatPollutantName
@@ -384,7 +385,13 @@ fun MainDashboardDetail(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    val change1h = zone.trends?.change1h
+                    val change1h = remember(zone.history, displayAqi, isUsAqi) {
+                        calculateChange1h(
+                            history = zone.history,
+                            currentAqi = displayAqi,
+                            isNaqi = isUsAqi,
+                        )
+                    }
                     if (change1h != null && change1h != 0) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             val isWorse = change1h > 0
