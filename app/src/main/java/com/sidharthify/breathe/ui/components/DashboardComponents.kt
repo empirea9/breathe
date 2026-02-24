@@ -543,7 +543,7 @@ fun MainDashboardDetail(
                             Surface(
                                 modifier = Modifier.size(16.dp),
                                 shape = CircleShape,
-                                color = aqiColor,
+                                color = Color.White,
                                 shadowElevation = 2.dp,
                                 border = androidx.compose.foundation.BorderStroke(
                                     2.dp,
