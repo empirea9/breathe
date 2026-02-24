@@ -185,11 +185,13 @@ fun MapScreen(
                                 android.graphics.Color.GRAY
                             }
 
-                        val cacheKey = "$aqiText-$colorInt"
+                        val isAirGradient = zone.provider?.contains("airgradient", ignoreCase = true) == true
+
+                        val cacheKey = "$aqiText-$colorInt-$isAirGradient"
                         var bitmap = bitmapCache.get(cacheKey)
 
                         if (bitmap == null) {
-                            bitmap = createMarkerBitmap(context, aqiText, colorInt)
+                            bitmap = createMarkerBitmap(context, aqiText, colorInt, isAirGradient)
                             bitmapCache.put(cacheKey, bitmap)
                         }
 
@@ -275,6 +277,7 @@ fun createMarkerBitmap(
     context: Context,
     text: String,
     color: Int,
+    hasGroundSensor: Boolean = false,
 ): Bitmap {
     val density = context.resources.displayMetrics.density
     val sizePx = (40 * density).toInt()
@@ -307,5 +310,19 @@ fun createMarkerBitmap(
 
         canvas.drawText(text, xPos, yPos, textPaint)
     }
+
+    // indicator for AirGradient ground sensors
+    if (hasGroundSensor) {
+        val dotRadius = 4f * density
+        val dotPaint = Paint().apply {
+            this.color = Color.parseColor("#4CAF50")
+            isAntiAlias = true
+            style = Paint.Style.FILL
+        }
+        val dotX = sizePx - dotRadius - (1f * density)
+        val dotY = dotRadius + (1f * density)
+        canvas.drawCircle(dotX, dotY, dotRadius, dotPaint)
+    }
+
     return bitmap
 }
