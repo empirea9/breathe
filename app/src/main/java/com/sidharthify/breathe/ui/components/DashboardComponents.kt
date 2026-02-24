@@ -378,7 +378,7 @@ fun MainDashboardDetail(
                     )
                     val displayPollutant = zone.usMainPollutant ?: zone.mainPollutant
                     Text(
-                        displayPollutant.uppercase(),
+                        formatPollutantName(displayPollutant).uppercase(),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,

@@ -26,12 +26,12 @@ fun createBlobIcon(
 
 fun formatPollutantName(key: String): String =
     when (key.lowercase()) {
-        "pm2_5", "pm2.5" -> "PM2.5"
-        "pm10" -> "PM10"
+        "pm2_5", "pm2.5" -> "PM₂.₅"
+        "pm10" -> "PM₁₀"
         "no2" -> "NO₂"
         "so2" -> "SO₂"
         "co" -> "CO"
-        "o3" -> "O₃"
+        "ch4" -> "CH₄"
         else -> key.uppercase()
     }
 
