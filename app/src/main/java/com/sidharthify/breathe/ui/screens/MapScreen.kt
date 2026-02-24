@@ -286,13 +286,25 @@ fun createMarkerBitmap(
     val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
 
+    val strokeWidth = 2f * density
+    val radius = sizePx / 2f
+
     val paint =
         Paint().apply {
             this.color = color
             isAntiAlias = true
             style = Paint.Style.FILL
         }
-    canvas.drawCircle(sizePx / 2f, sizePx / 2f, sizePx / 2f, paint)
+    canvas.drawCircle(radius, radius, radius - strokeWidth / 2f, paint)
+
+    val strokePaint =
+        Paint().apply {
+            this.color = Color.WHITE
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            this.strokeWidth = strokeWidth
+        }
+    canvas.drawCircle(radius, radius, radius - strokeWidth / 2f, strokePaint)
 
     if (text.isNotEmpty()) {
         val textPaint =
