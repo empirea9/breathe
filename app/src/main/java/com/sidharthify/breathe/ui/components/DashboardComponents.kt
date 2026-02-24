@@ -376,8 +376,9 @@ fun MainDashboardDetail(
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )
+                    val displayPollutant = zone.usMainPollutant ?: zone.mainPollutant
                     Text(
-                        zone.mainPollutant.uppercase(),
+                        displayPollutant.uppercase(),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
