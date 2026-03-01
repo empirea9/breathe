@@ -6,7 +6,18 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.em
 import kotlin.math.roundToInt
 
 fun createBlobIcon(
@@ -26,14 +37,71 @@ fun createBlobIcon(
 
 fun formatPollutantName(key: String): String =
     when (key.lowercase()) {
-        "pm2_5", "pm2.5" -> "PM₂.₅"
-        "pm10" -> "PM₁₀"
-        "no2" -> "NO₂"
-        "so2" -> "SO₂"
+        "pm2_5", "pm2.5" -> "PM2.5"
+        "pm10" -> "PM10"
+        "no2" -> "NO2"
+        "so2" -> "SO2"
         "co" -> "CO"
-        "ch4" -> "CH₄"
+        "ch4" -> "CH4"
         else -> key.uppercase()
     }
+
+@Composable
+fun PollutantText(
+    rawKey: String,
+    style: TextStyle,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    fontWeight: FontWeight? = null
+) {
+    val annotatedString = remember(rawKey) {
+        buildAnnotatedString {
+            when (rawKey.lowercase()) {
+                "pm2.5", "pm2_5" -> {
+                    append("PM")
+                    withStyle(SpanStyle(baselineShift = BaselineShift.Subscript, fontSize = 0.7.em)) { append("2.5")
+                    }
+                }
+                "pm10" -> {
+                    append("PM")
+                    withStyle(SpanStyle(baselineShift = BaselineShift.Subscript, fontSize = 0.7.em)) { append("10")
+                    }
+                }
+                "no2" -> {
+                    append("NO")
+                    withStyle(SpanStyle(baselineShift = BaselineShift.Subscript, fontSize = 0.7.em)) { append("2")
+                    }
+                }
+                "so2" -> {
+                    append("SO")
+                    withStyle(SpanStyle(baselineShift = BaselineShift.Subscript, fontSize = 0.7.em)) { append("2")
+                    }
+                }
+                "ch4" -> {
+                    append("CH")
+                    withStyle(SpanStyle(baselineShift = BaselineShift.Subscript, fontSize = 0.7.em)) { append("4")
+                    }
+                }
+                "o3" -> {
+                    append("O")
+                    withStyle(SpanStyle(baselineShift = BaselineShift.Subscript, fontSize = 0.7.em)) { append("3")
+                    }
+                }
+                else -> {
+                    append(formatPollutantName(rawKey))
+                }
+            }
+        }
+    }
+
+    Text(
+        text = annotatedString,
+        style = style,
+        modifier = modifier,
+        color = color,
+        fontWeight = fontWeight
+    )
+}
 
 fun getAqiColor(
     aqi: Int,

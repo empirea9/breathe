@@ -5,6 +5,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -45,10 +46,11 @@ import com.sidharthify.breathe.R
 import com.sidharthify.breathe.data.AqiResponse
 import com.sidharthify.breathe.data.LocalAnimationSettings
 import com.sidharthify.breathe.expressiveClickable
+import com.sidharthify.breathe.util.PollutantText
 import com.sidharthify.breathe.util.calculateChange1h
 import com.sidharthify.breathe.util.calculateCigarettes
-import com.sidharthify.breathe.util.calculateUsAqi
 import com.sidharthify.breathe.util.formatPollutantName
+import com.sidharthify.breathe.util.calculateUsAqi
 import com.sidharthify.breathe.util.getAqiCategory
 import com.sidharthify.breathe.util.getAqiColor
 import com.sidharthify.breathe.util.getTimeAgo
@@ -161,10 +163,10 @@ fun MainDashboardDetail(
 
     val isOpenMeteo =
         provider?.contains("Open-Meteo", ignoreCase = true) == true ||
-            provider?.contains("OpenMeteo", ignoreCase = true) == true
+                provider?.contains("OpenMeteo", ignoreCase = true) == true
     val isAirGradient =
         provider?.contains("AirGradient", ignoreCase = true) == true ||
-            provider?.contains("AirGradient", ignoreCase = true) == true
+                provider?.contains("AirGradient", ignoreCase = true) == true
 
     val softBurstShape = remember { SoftBurstShape() }
 
@@ -377,22 +379,22 @@ fun MainDashboardDetail(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )
                     val displayPollutant = zone.usMainPollutant ?: zone.mainPollutant
-                    Text(
-                        formatPollutantName(displayPollutant).uppercase(),
+                    PollutantText(
+                        rawKey = zone.mainPollutant,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-
                     val change1h = remember(zone.history, displayAqi, isUsAqi) {
-                        calculateChange1h(
-                            history = zone.history,
-                            currentAqi = displayAqi,
-                            isNaqi = isUsAqi,
-                        )
-                    }
+                    calculateChange1h(
+                        history = zone.history,
+                        currentAqi = displayAqi,
+                        isNaqi = isUsAqi,
+                    )
+                }
+
                     if (change1h != null && change1h != 0) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             val isWorse = change1h > 0
@@ -429,11 +431,11 @@ fun MainDashboardDetail(
 
         // AQI Category Card with Spectrum
         val aqiCategory = getAqiCategory(displayAqi, !isUsAqi)
-        
+
         // Calculate position on spectrum (0-500 for US, 0-500 for NAQI)
         val maxAqi = if (!isUsAqi) 500f else 500f
         val targetIndicatorPosition = (displayAqi.coerceIn(0, 500) / maxAqi).coerceIn(0f, 1f)
-        
+
         // Animate indicator position
         val animatedIndicatorPosition by animateFloatAsState(
             targetValue = targetIndicatorPosition,
@@ -444,7 +446,6 @@ fun MainDashboardDetail(
             },
             label = "IndicatorPosition",
         )
-        
         val spectrumColorStops = if (!isUsAqi) {
             // US AQI breakpoints
             arrayOf(
@@ -478,7 +479,7 @@ fun MainDashboardDetail(
                 1.00f to Color(0xFFAF2D24)
             )
         }
-        
+
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -507,9 +508,9 @@ fun MainDashboardDetail(
                         color = aqiColor,
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(12.dp))
-                
+
                 // Spectrum meter
                 Box(
                     modifier = Modifier
@@ -527,7 +528,7 @@ fun MainDashboardDetail(
                                 Brush.horizontalGradient(colorStops = spectrumColorStops)
                             ),
                     )
-                    
+
                     // Indicator
                     Box(
                         modifier = Modifier
@@ -700,8 +701,8 @@ fun PollutantChip(
                             .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape)
                             .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
-                    Text(
-                        formatPollutantName(key),
+                    PollutantText(
+                        rawKey = key,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
