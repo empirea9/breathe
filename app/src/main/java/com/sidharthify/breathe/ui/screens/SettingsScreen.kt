@@ -61,9 +61,9 @@ fun SettingsScreen(
     var isMadness by remember { mutableStateOf(false) }
     var madnessIntensity by remember { mutableIntStateOf(0) }
     val isUsAqi by viewModel.isUsAqi.collectAsState()
-    var versionLabel by remember { mutableStateOf("Current Version: v3.1-14") }
+    var versionLabel by remember { mutableStateOf("Current Version: v3.1-15") }
 
-    val currentVersion = "v3.1-14"
+    val currentVersion = "v3.1-15"
 
     // Reset tap counter if inactive
     LaunchedEffect(easterEggCounter) {
@@ -497,6 +497,9 @@ fun SettingsScreen(
             SettingsItem("Aaditya Gupta", "Developer (@Flashwreck)", onClick = {
                 uriHandler.openUri("https://github.com/Flashwreck")
             }, showDivider = true)
+            SettingsItem("Aditya Choudhary", "Contributor (@empirea9)", onClick = {
+                uriHandler.openUri("https://github.com/empirea9")
+            }, showDivider = false)
             SettingsItem("Veer P.S Singh", "Contributor (@Lostless1907)", onClick = {
                 uriHandler.openUri("https://github.com/Lostless1907")
             }, showDivider = false)

@@ -25,6 +25,7 @@ data class AqiResponse(
     @SerializedName("aqi") val nAqi: Int,
     @SerializedName("us_aqi") val usAqi: Int?,
     @SerializedName("main_pollutant") val mainPollutant: String,
+    @SerializedName("us_main_pollutant") val usMainPollutant: String?,
     @SerializedName("aqi_breakdown") val aqiBreakdown: Map<String, Int>?,
     @SerializedName("concentrations_us_units") val concentrations: Map<String, Double>?,
     @SerializedName("timestamp_unix") val timestampUnix: Double?,
